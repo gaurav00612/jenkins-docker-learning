@@ -11,10 +11,6 @@ pipeline {
 
         stage('Install Dependencies') {
             steps {
-                sh '''
-            sudo apt-get update
-            sudo apt-get install -y nodejs npm
-        '''
                 sh 'npm ci'
             }
         }
