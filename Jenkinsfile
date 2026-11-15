@@ -11,6 +11,7 @@ pipeline {
 
         stage('Install Dependencies') {
             steps {
+                sh 'apt install node'
                 sh 'npm ci'
             }
         }
