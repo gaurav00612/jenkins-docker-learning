@@ -25,21 +25,30 @@ pipeline {
         }
 
         stage('ECR Authentication') {
-            steps {
-                sh '''
-                    aws ecr get-login-password \
-                    --region $AWS_REGION | docker login \
-                    --username AWS \
-                    --password-stdin \
-                    $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
-                '''
-            }
-        }
+    steps {
+        withCredentials([
+            usernamePassword(
+                credentialsId: 'aws-ecr-creds',
+                usernameVariable: 'AWS_ACCESS_KEY_ID',
+                passwordVariable: 'AWS_SECRET_ACCESS_KEY'
+            )
+        ]) {
+            sh '''
+                export AWS_DEFAULT_REGION=ap-south-1
 
+                aws ecr get-login-password \
+                --region ap-south-1 | docker login \
+                --username AWS \
+                --password-stdin \
+                242627333029.dkr.ecr.ap-south-1.amazonaws.com
+            '''
+        }
+    }
+}
         stage('Tag Docker Image') {
             steps {
                 sh '''
-                    docker tag student-app:v1 \
+                    docker tag demo-project:v1 \
                     $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY:$IMAGE_TAG
                 '''
             }
